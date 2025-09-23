@@ -1,0 +1,16 @@
+{
+  "name": "tjsn-parser",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build-test":"bun build test.ts --outifile test.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+  }
+}
