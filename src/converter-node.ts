@@ -26,7 +26,21 @@ export class Converter {
     else p.innerHTML = "&nbsp;"
     return p
   }
+  cite(node:NodeI<{cite:string,citeA:boolean}>)
+  
+  {
+    const cite = document.createElement('a')
+    cite.setAttribute('data-cite','1')
+    cite.href = `#${node.attrs!.cite}`
+    if (node.attrs?.citeA) {
+      cite.setAttribute('citeA','true')
+      
+    }
 
+    return cite;
+
+
+  }
   heading(node: NodeI): HTMLElement {
     const level = node.attrs?.level ?? 1
     const h = document.createElement(`h${level}`) as HTMLElement
