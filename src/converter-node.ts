@@ -1,12 +1,6 @@
+import {type NodeI} from "./types/type"
 
-
-export type NodeI = {
-  type: string
-  text?: string
-  content?: NodeI[]
-  marks?: { type: string }[]
-  attrs?: Record<string, any>
-}
+import { TableView } from "./utils/table-renderer";
 
 export class Converter {
 
@@ -62,12 +56,6 @@ export class Converter {
 
   text(node: NodeI): Node {
     let text = node.text ?? ""
-    text = text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;")
 
     let el: Node = document.createTextNode(text)
 
@@ -172,9 +160,7 @@ export class Converter {
   }
 
   table(node: NodeI): HTMLElement {
-    const table = document.createElement("table")
-    if (node.content) table.append(...this.getHtmlContent(node.content))
-    return table
+    return TableView.render(node)
   }
 
   tableRow(node: NodeI): HTMLElement {
@@ -224,7 +210,7 @@ export class Converter {
   ref(node: NodeI): HTMLElement {
     const a = document.createElement("a")
     if (node.attrs?.link) a.href = `#${node.attrs.link}`
-    if (node.attrs?.ref) a.className = node.attrs.ref.toLowerCase()
+    if (node.attrs?.ref) a.className = (node.attrs.ref as string).toLowerCase()
     a.textContent = `(ref ${node.attrs?.ref ?? ""})`
     return a
   }

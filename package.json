@@ -1,9 +1,31 @@
 {
   "name": "tjsn-parser",
-  "module": "src/index.ts",
+  "version": "0.0.5",
+  "description": "json-parser-html",
+  "keywords": [
+    "json-parser"
+  ],
+  "homepage": "https://github.com/jefyokta/tjsn-parser#readme",
+  "bugs": {
+    "url": "https://github.com/jefyokta/tjsn-parser/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jefyokta/tjsn-parser.git"
+  },
+  "license": "ISC",
+  "author": "jefyokta",
   "type": "module",
+  "exports": {
+    "import": "./dist/index.js",
+    "types": "./dist/*.d.ts"
+  },
+  "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build-test":"bun build test.ts --outifile test.js"
+    "build-test": "bun build test.ts --outifile test.js",
+    "build": "tsc",
+    "publish": "rm -rf ./dist && tsc && npm publish"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -11,6 +33,5 @@
   "peerDependencies": {
     "typescript": "^5"
   },
-  "dependencies": {
-  }
+  "module": "dist/index.js"
 }

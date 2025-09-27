@@ -1,25 +1,47 @@
 import { Converter } from "./converter-node";
+import TocBuilder from "./toc";
+import type { NodeI } from "./types/type";
 
-export class T {
-private converter:Converter;
-constructor(){
-    this.converter = new Converter;
+export class Parser {
+  private converter: Converter;
 
-}
+  constructor() {
+    this.converter = new Converter();
+  }
 
-  render(nodes:NodeI[],appendTo:HTMLElement){
+  static buildHeading({text,level,id}:{text:string,level?:number,id:string}):NodeI{
+    level = level ? level : 1;
+
+    return {
+      type:"heading",
+      attrs:{
+        level,
+        id
+      },
+      content:[
+        {type:'text',
+          text
+        }
+      ]
+    }
+
+  }
 
 
-  const elmns =  nodes.map(n=>{
-     return this.converter.parse(n)
-    })
+ buildListContent(content?:NodeI[]){
 
-    console.log(elmns)
+ }
 
-    appendTo.append(...elmns)
+  toc(nodes: NodeI[], tocEl: HTMLElement) {
+    const content = TocBuilder.render(nodes)
+    tocEl.appendChild(content);
+  }
 
+  render(nodes: NodeI[], appendTo: HTMLElement) {
+    const elmns = nodes.map((n) => {
+      return this.converter.parse(n);
+    });
 
-
-
+    appendTo.append(...elmns);
   }
 }
