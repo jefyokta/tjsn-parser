@@ -3,17 +3,11 @@
 
 export class IdCollector {
 
-    static id:string[] = ['']
-
-
+    static id = 0
     static getId(id:string):string{
-        if (this.id.includes(id)) {
-            return this.getId(id+'x')
-        }
-
-        return id;
-
-
+    
+        this.id++
+        return `el-${this.id}`
     }
 
 }

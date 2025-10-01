@@ -6,6 +6,9 @@ import type { NodeI } from "./types/type";
 export class Parser {
   private converter: Converter;
 
+  private praHead :{text:string,id:string}[]= []
+  private afterHead :{text:string,id:string}[]= []
+
   constructor() {
     this.converter = new Converter();
   }
@@ -32,8 +35,25 @@ export class Parser {
 
  }
 
-  toc(nodes: NodeI[], tocEl: HTMLElement) {
-    const content = (new TocBuilder).render()
+  tocPrahead(pra:string,id:string){
+
+    this.praHead.push({text:pra,id})
+  }
+  tocAfterHead(text:string,id:string){
+    this.afterHead.push({text,id})
+  }
+
+  toc(tocEl: HTMLElement,nodes?:NodeI[]) {
+
+    const builder = new TocBuilder;
+    this.praHead.forEach(s=>{
+      builder.withPraHeading(s)
+    })
+     this.afterHead.forEach(s=>{
+      builder.withAfterHeading(s)
+    })
+    const content = builder._render(nodes)
+
     tocEl.appendChild(content);
   }
 

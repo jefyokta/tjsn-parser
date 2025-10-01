@@ -4,6 +4,9 @@ import {type NodeI} from "./types/type"
 import { TableView } from "./utils/table-renderer";
 
 export class Converter {
+
+
+  constructor(private markExcept:string[] =[]){}
   private getHtmlContent(nodes?: NodeI[]): Node[] {
     if (!nodes) return []
     return nodes.map((n) => this.parse(n))
@@ -43,9 +46,9 @@ export class Converter {
     const level = node.attrs?.level ?? 1
     const h = document.createElement(`h${level}`) as HTMLElement
     if (node.attrs?.id){
-      console.log(IdCollector.id)
+
+      console.log(node.attrs.id)
        node.attrs.id = IdCollector.getId(node.attrs.id)
-       IdCollector.id.push(node.attrs.id)
        h.id = node.attrs.id
       }
     if (node.content) h.append(...this.getHtmlContent(node.content))
@@ -72,7 +75,7 @@ export class Converter {
     return ul
   }
 
-  text(node: NodeI): Node {
+  text(node: NodeI,except?:string[]): Node {
     let text = node.text ?? ""
 
     let el: Node = document.createTextNode(text)
@@ -80,7 +83,9 @@ export class Converter {
     if (node.marks) {
       node.marks.forEach((mark) => {
         if (typeof (this as any)[mark.type] === "function") {
-          el = (this as any)[mark.type](el.textContent || "")
+          if ( !this.markExcept.includes(mark.type)) {            
+            el = (this as any)[mark.type](el.textContent || "")
+          }
         }
       })
     }
