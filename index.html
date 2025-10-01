@@ -4,9 +4,200 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+    ul{
+        display: flex;
+        flex-direction: column;
+    }
+    .toc h1 {
+        text-align: center;
+        font-size: 1.5em;
+        margin-bottom: 1em;
+    }
+
+    .toc :has(h2) {
+        margin-top: 1em;
+        margin-bottom: .5em;
+
+    }
+
+    .toc :has(h3) {
+        margin-bottom: .5em;
+
+    }
+
+    .toc-item-number {
+        width: 2cm;
+    }
+
+    .toc li h2 {
+        grid-template-columns: 1fr auto;
+        display: grid;
+        border-color: #0000;
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: 1em;
+        font-weight: 400;
+        line-height: 1.1;
+        position: relative;
+
+    }
+
+
+    .toc li h2::before {
+        content: ".................................................................................................................................................";
+        text-align: right;
+        color: black;
+        letter-spacing: 2pt;
+        width: 95%;
+        padding-left: 5px;
+        font-weight: bolder;
+        font-size: .8em;
+        position: absolute;
+        bottom: 2px;
+        overflow: hidden;
+
+    }
+
+
+
+    .toc li h2 a {
+        z-index: 100;
+        padding-right: .1ch;
+        line-height: 1.1;
+        position: relative;
+        color: black;
+        text-decoration: none;
+    }
+
+    .toc li h2 a span {
+        background: white;
+        padding-right: 1ch;
+        display: inline;
+    }
+
+    .toc li h2 .link-number {
+        text-align: right;
+        background: white;
+        z-index: 2;
+        display: inline-block;
+
+    }
+
+    .toc li h2 .link-number::after {
+        content: target-counter(attr(href url), page);
+        font-weight: bold
+    }
+
+    .toc li h2 .link-number-pra:after  {
+        content: target-counter(attr(href url), page, lower-roman)
+    }
+
+
+    .toc ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .toc li {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    * {
+        text-decoration: none;
+        color: black;
+    }
+
+    .toc {
+        string-set: page-footer counter(page, upper-roman)
+    }
+
+    .toc ul {
+        padding-left: 1em;
+    }
+
+    .toc li h3 {
+        grid-template-columns: 1fr auto;
+        display: grid;
+        border-color: #0000;
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: 1em;
+        font-weight: 400;
+        line-height: 1.1;
+        position: relative;
+
+    }
+
+
+    .toc li h3::before {
+        content: ".................................................................................................................................................";
+        text-align: right;
+        color: black;
+        letter-spacing: 2pt;
+        width: 95%;
+        padding-left: 5px;
+        font-size: .8em;
+        position: absolute;
+        bottom: 2px;
+        overflow: hidden;
+    }
+
+
+
+    .toc li h3 a {
+        z-index: 100;
+        padding-right: .1ch;
+        line-height: 1.1;
+        position: relative;
+        color: black;
+        text-decoration: none;
+    }
+
+    .toc li h3 a span {
+        background: white;
+        padding-right: 1ch;
+        display: inline;
+    }
+
+    .toc li h3 .link-number {
+        text-align: right;
+        background: white;
+        z-index: 2;
+        display: inline-block;
+
+    }
+
+    .toc li h3 .link-number::after {
+        content: target-counter(attr(href url), page)
+    }
+
+    .toc ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .toc li {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    * {
+        text-decoration: none;
+        color: black;
+    }
+
+    .toc ul {
+        padding-left: 1em;
+    }
+</style>
+
 </head>
 <body>
-    <section id="toc-container">
+    <section id="toc-container" class="toc">
 
     </section>
     <section class="content"></section>

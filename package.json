@@ -1,6 +1,6 @@
 {
   "name": "tjsn-parser",
-  "version": "0.0.5",
+  "version": "0.0.8",
   "description": "json-parser-html",
   "keywords": [
     "json-parser"
@@ -24,8 +24,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build-test": "bun build test.ts --outifile test.js",
-    "build": "tsc",
-    "publish": "rm -rf ./dist && tsc && npm publish"
+    "build": "tsc && esbuild 'src/*.ts' 'src/**/*.ts' --outdir=dist --minify",
+    "publish": "rm -rf ./dist && bun run build && npm publish"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -33,5 +33,8 @@
   "peerDependencies": {
     "typescript": "^5"
   },
-  "module": "dist/index.js"
+  "module": "dist/index.js",
+  "dependencies": {
+    "terser": "^5.44.0"
+  }
 }

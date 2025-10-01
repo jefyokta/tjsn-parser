@@ -1,106 +1,172 @@
+import { HeadingCollector } from "./collector/heading";
 import { Converter } from "./converter-node";
 import type { NodeI } from "./types/type";
 
 
-type PraHead =NodeI&{isPra:boolean};
-export default class TocBuilder {
 
 
-    private static counter =0;
-    private static subCounter =0;
-    private static subSubCounter = 0;
+export class TocBuilder {
 
-    private static converter:Converter =  new Converter;
-    static render(nodes:NodeI[],praHead?:PraHead[]){
 
-        let currentLevel = 1;
-        let parents: HTMLUListElement[] = [];
+    private root;
+    private converter;
 
-        const pra = praHead ? praHead: [];
+    private counter =0;
+    private subCounter = 0;
+    private subSubCounter =0;
 
-        [...pra,...nodes].forEach((n) => {
-            console.log(n)
-        if (n.type === "heading") {
-            const { level } = n.attrs as { level: number };
-            const li = document.createElement("li");
-            const {attrs} = n as NodeI<{level:number,id:string}>
-            const h = this.buildLink(n,{...attrs!,isPra:false})
-            li.append(h)
-            if (level > currentLevel) {
-            const newUl = document.createElement("ul");
-            parents[parents.length - 1]
-                ?.lastElementChild
-                ?.appendChild(newUl);
-            parents.push(newUl);
-            } else if (level < currentLevel) {
-            parents.splice(level, parents.length - level);
-            }
 
-            currentLevel = level;
-            parents[parents.length - 1]?.appendChild(li);
+    constructor (){
+        this.root = document.createElement('div')
+        this.converter = new Converter
+        const h1 = document.createElement('h1')
+        h1.id='toc'
+        h1.setAttribute('style','text-align:center;text-transform:capitalize;')
+        h1.textContent = "DAFTAR ISI"
+        this.root.append(h1)
+    }
+render() {
+    const headings = HeadingCollector.getAll();
+    const root = this.root;
+    const stack: { level: number, ul: HTMLUListElement }[] = [];
+
+    const rootUl = document.createElement('ul');
+    root.append(rootUl);
+    stack.push({ level: 0, ul: rootUl });
+
+    headings.forEach(h => {
+        const level = h.attrs?.level || 1;
+        this.increseCounter(level);
+
+        const li = document.createElement('li');
+        li.append(this.buildLink(h, this.getCounter(level)));
+
+        
+        if (level > stack[stack.length - 1]!.level) {
+            const newUl = document.createElement('ul');
+            stack[stack.length - 1]!.ul.append(li); 
+            stack[stack.length - 1]!.ul.append(newUl); 
+            stack.push({ level, ul: newUl }); 
         }
-        });
-
-       const container = document.createElement('div')
         
-        container.append(...parents)
-        return container;
+        else if (level === stack[stack.length - 1]!.level) {
+            stack[stack.length - 1]!.ul.append(li);
+        }
+        
+        else {
+            while (stack.length > 0 && stack[stack.length - 1]!.level >= level) {
+                stack.pop();
+            }
+            const parentUl = stack[stack.length - 1]!.ul;
+            parentUl.append(li);
 
+            const newUl = document.createElement('ul');
+            parentUl.append(newUl);
+            stack.push({ level, ul: newUl });
+        }
+    });
+
+    return root;
+}
+
+
+    increseCounter(level?:number){
+        if (level == 1) {
+            this.counter++
+            
+        }
+        if (level == 2) {
+            this.subCounter++
+            
+        }
+        if (level == 3) {
+            this.subSubCounter++
+            
+        }
 
     }
 
-    static buildLink(node:NodeI,{id,level,isPra}:{id:string,level:number,isPra?:boolean}){
+    getCounter(level?:number){
+        if (level == 1) {
+            return `${this.counter}.`
 
-        const heading = document.createElement(`h${level == 1 ? '2' :'3'}`)
-        const a = document.createElement('a')
+        }
+        if (level == 2) {
+            return `${this.counter}.${this.subCounter}.`
 
-        const aNum = document.createElement('a')
+        }
+        if (level == 3) {
+            return `${this.counter}.${this.subCounter}.${this.subSubCounter}.`
 
-        aNum.setAttribute('href',`#${id}`)
-        const span = document.createElement('span')
-        
+            
+        }
 
-        a.classList.add(isPra ? 'link-number-pra' : 'link-number')
-        a.setAttribute('href',`#${id}`)
-        a.classList.add('page-num')
-
-        const text =    this.getText(node as NodeI<{level:number}>,isPra ||false)
-        span.append(...text)
-
-        a.append(span)
-
-
-        heading.append(a,aNum)
-
-
-        return heading;
-
-
+        return ''
     }
 
-    static getText(node:NodeI<{level:number}>,isPra?:boolean){
-        const {level} = node.attrs!
-        let number;
+    buildLink(node:NodeI,counter:string,pra?:boolean){
 
-            if (level ==1){
+      const h =  document.createElement(`h${node.attrs?.level == 1 ? 2 : 3}`)
 
-                this.counter++;
-                this.subCounter = 0;
-                number =  document.createTextNode(isPra ? '':this.counter+'.')
-            }
-            else if(level == 2){
+      const pageNum = document.createElement('a')
+      pageNum.href = `#${node.attrs?.id}`
+      pageNum.classList.add('page-num')
 
-                this.subSubCounter =0;
-                ++this.subCounter;
+      const spanWrapper = document.createElement('span')
 
-                number =  document.createTextNode(this.counter+'.'+this.subCounter)
-            }
-            else{
-                ++this.subSubCounter
-                 number =  document.createTextNode(this.counter+'.'+this.subCounter+'.'+this.subSubCounter)
-            }
+      const tocItem = document.createElement('span')
+      tocItem.classList.add('toc-item')
 
-            return [number,this.converter.parse(node)]
+     let mainContent = document.createElement('span')
+      let tocItemNumber =document.createElement('span')
+      tocItemNumber.classList.add('toc-item-number')
+      if (node.attrs?.level == 1) {
+             mainContent = document.createElement('b')
+             if (pra) {
+              if(node.content  && node.content[0]){ 
+                tocItemNumber =  this.converter.text(node.content[0]) as any
+                tocItemNumber.classList.contains('toc-item-number') && tocItem.classList.remove('toc-item-number')
+                }
+                
+             }else{
+                let text ;
+                if(node.content  && node.content[0]){ 
+                    text = this.converter.text(node.content[0])
+               
+                }
+                tocItemNumber.append(document.createTextNode(counter),text || document.createTextNode(''))
+             }     
+      }
+      else{
+        let text ;
+        if(node.content  && node.content[0]){ 
+        text = this.converter.text(node.content[0])
+               
+        }
+        tocItemNumber.append(document.createTextNode(counter),text || document.createTextNode(''))
+
+      }
+   
+     
+     
+     
+        mainContent.append(tocItemNumber)
+        tocItem.append(mainContent)
+        spanWrapper.append(tocItem)
+        pageNum.append(spanWrapper)
+
+        const linkNumber = document.createElement('a')
+        linkNumber.href = `#${node.attrs?.id}`
+        linkNumber.classList.add('link-number')
+
+
+        h.append(pageNum,linkNumber)
+
+
+
+
+      return h;
 
     }
 }
+

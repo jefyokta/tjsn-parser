@@ -1,10 +1,9 @@
+import { HeadingCollector } from "./collector/heading";
+import { IdCollector } from "./collector/id-collector";
 import {type NodeI} from "./types/type"
-
 import { TableView } from "./utils/table-renderer";
 
 export class Converter {
-
-
   private getHtmlContent(nodes?: NodeI[]): Node[] {
     if (!nodes) return []
     return nodes.map((n) => this.parse(n))
@@ -36,7 +35,6 @@ export class Converter {
       cite.setAttribute('citeA','true')
       
     }
-
     return cite;
 
 
@@ -44,8 +42,14 @@ export class Converter {
   heading(node: NodeI): HTMLElement {
     const level = node.attrs?.level ?? 1
     const h = document.createElement(`h${level}`) as HTMLElement
-    if (node.attrs?.id) h.id = node.attrs.id
+    if (node.attrs?.id){
+      console.log(IdCollector.id)
+       node.attrs.id = IdCollector.getId(node.attrs.id)
+       IdCollector.id.push(node.attrs.id)
+       h.id = node.attrs.id
+      }
     if (node.content) h.append(...this.getHtmlContent(node.content))
+    HeadingCollector.add(node)
     return h
   }
 
