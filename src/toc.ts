@@ -169,7 +169,7 @@ export class TocBuilder {
 
         const linkNumber = document.createElement('a')
         linkNumber.href = `#${node.attrs?.id}`
-        linkNumber.classList.add('link-number')
+        linkNumber.classList.add( pra ? 'link-pra-number':'link-number')
 
 
         h.append(pageNum,linkNumber)

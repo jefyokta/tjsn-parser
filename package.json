@@ -1,6 +1,6 @@
 {
   "name": "tjsn-parser",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "json-parser-html",
   "keywords": [
     "json-parser"
@@ -28,13 +28,13 @@
     "pub": "rm -rf ./dist && bun run build && npm publish"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+      "terser": "^5.44.0"
+
   },
   "peerDependencies": {
     "typescript": "^5"
   },
-  "module": "dist/index.js",
-  "dependencies": {
-    "terser": "^5.44.0"
-  }
+  "module": "dist/index.js"
+
 }

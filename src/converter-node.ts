@@ -46,8 +46,6 @@ export class Converter {
     const level = node.attrs?.level ?? 1
     const h = document.createElement(`h${level}`) as HTMLElement
     if (node.attrs?.id){
-
-      console.log(node.attrs.id)
        node.attrs.id = IdCollector.getId(node.attrs.id)
        h.id = node.attrs.id
       }
