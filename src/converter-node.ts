@@ -2,8 +2,9 @@ import { HeadingCollector } from "./collector/heading";
 import { IdCollector } from "./collector/id-collector";
 import {type NodeI} from "./types/type"
 import { TableView } from "./utils/table-renderer";
-
+import Counter from "./collector/counter";
 export class Converter {
+
 
 
   constructor(private markExcept:string[] =[]){}
@@ -40,7 +41,6 @@ export class Converter {
     }
     return cite;
 
-
   }
   heading(node: NodeI): HTMLElement {
     const level = node.attrs?.level ?? 1
@@ -49,6 +49,10 @@ export class Converter {
        node.attrs.id = IdCollector.getId(node.attrs.id)
        h.id = node.attrs.id
       }
+    if (node.attrs?.level == 1) {
+      Counter.increaseHeading()
+      
+    }
     if (node.content) h.append(...this.getHtmlContent(node.content))
     HeadingCollector.add(node)
     return h
@@ -131,8 +135,28 @@ export class Converter {
     const cap = document.createElement("figcaption")
     cap.style.textAlign = "center"
     if (type) cap.dataset.type = type
+   
     if (id) cap.id = id
     if (node.content) cap.append(...this.getHtmlContent(node.content))
+       if (type == 'imageFigure') {
+          Counter.increaseImage()
+          let nodes =[]
+         for (let index = 0; index < cap.children.length; index++) {
+            nodes.push(cap.children.item(index) as HTMLElement)
+          
+         }
+          Counter.addImage({id:id!,caption:nodes})    
+        }
+        if (type == 'figureTable') {
+          Counter.increaseTable()
+          let nodes =[]
+          for (let index = 0; index < cap.children.length; index++) {
+            nodes.push(cap.children.item(index) as HTMLElement)
+          
+         }
+         Counter.addTable({id:id!,caption:nodes})
+          
+        }
     return cap
   }
 
@@ -144,7 +168,6 @@ export class Converter {
     fig.style.alignItems = "center"
     fig.style.width = "100%"
     if (node.attrs?.figureId) fig.setAttribute("figureId", node.attrs.figureId)
-
     if (node.content) {
       const [imgNode, captionNode] = node.content
       if (imgNode) fig.append(this.parse(imgNode))
@@ -158,7 +181,15 @@ export class Converter {
     const fig = document.createElement("figure")
     fig.dataset.type = "figureTable"
     if (node.attrs?.id) fig.id = node.attrs.id
-    if (node.content) fig.append(...this.getHtmlContent(node.content))
+    if (node.content) {
+      
+      const [caption,table] =  node.content
+      if (caption) {
+       const capNode = this.figcaption(caption,node.attrs?.type,node.attrs?.id)
+       fig.append(capNode)
+      }
+      table && fig.append(this.parse(table))
+    }
     return fig
   }
 

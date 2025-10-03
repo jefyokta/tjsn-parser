@@ -13,7 +13,6 @@ type ULList ={
 
 export class TocBuilder {
 
-    private id = 0;
     private root;
     private converter;
 
@@ -169,7 +168,7 @@ export class TocBuilder {
 
         const linkNumber = document.createElement('a')
         linkNumber.href = `#${node.attrs?.id}`
-        linkNumber.classList.add( pra ? 'link-pra-number':'link-number')
+        linkNumber.classList.add( pra ? 'link-number-pra':'link-number')
 
 
         h.append(pageNum,linkNumber)

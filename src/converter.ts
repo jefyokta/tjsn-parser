@@ -29,12 +29,6 @@ export class Parser {
     }
 
   }
-
-
- buildListContent(content?:NodeI[]){
-
- }
-
   tocPrahead(pra:string,id:string){
 
     this.praHead.push({text:pra,id})
@@ -57,17 +51,6 @@ export class Parser {
     tocEl.appendChild(content);
   }
 
-  async tocLazy(gen: AsyncIterable<NodeI>, appendTo: HTMLElement){
-
-  }
-
-  async renderLazy(gen: AsyncIterable<NodeI>, appendTo: HTMLElement) {
-    for await (const node of gen) {
-      const el = this.converter.parse(node);
-      appendTo.append(el);
-      await new Promise(requestAnimationFrame);
-    }
-  }
   render(nodes: NodeI[], appendTo: HTMLElement) {
     HeadingCollector.reset()
     HeadingCollector.start()
@@ -76,5 +59,18 @@ export class Parser {
     });
 
     appendTo.append(...elmns);
+
+    return this
   }
+
+  renderImageList(appendTo:HTMLElement){
+
+
+  
+
+  
+
+  }
+
+  renderTableList(){}
 }
