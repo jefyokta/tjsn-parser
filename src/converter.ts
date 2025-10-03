@@ -1,5 +1,7 @@
+import Counter from "./collector/counter";
 import { HeadingCollector } from "./collector/heading";
 import { Converter } from "./converter-node";
+import List from "./list/list";
 import {TocBuilder} from "./toc";
 import type { NodeI } from "./types/type";
 
@@ -8,6 +10,8 @@ export class Parser {
 
   private praHead :{text:string,id:string}[]= []
   private afterHead :{text:string,id:string}[]= []
+  private imageName = 'Gambar'
+  private tableName ='Tabel'
 
   constructor() {
     this.converter = new Converter();
@@ -59,11 +63,32 @@ export class Parser {
     });
 
     appendTo.append(...elmns);
+    this.fixRef(appendTo)
+    return new List(this.tableName,this.imageName)
+  }
 
-    return this
+  private fixRef(el:HTMLElement){
+    el.querySelectorAll<HTMLAnchorElement>('a.imagefigure').forEach(e=>{
+      const id = e.getAttribute('href')?.slice(1,e.getAttribute('href')?.length)
+     const data = Counter.getImageCounter(id||'')
+     if (data) {
+      e.textContent = `${this.imageName} ${data.counter}`
+      
+     }
+    })
+    el.querySelectorAll('a.figuretable').forEach(e=>{
+      const id = e.getAttribute('href')?.slice(1,e.getAttribute('href')?.length)
+      const data = Counter.getTableCounter(id||'')
+      if(data){
+        e.textContent = `${this.tableName} ${data.counter}`
+      }
+    })
+
   }
 
   renderImageList(appendTo:HTMLElement){
+
+
 
 
   

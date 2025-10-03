@@ -129,7 +129,7 @@ export class TocBuilder {
       const tocItem = document.createElement('span')
       tocItem.classList.add('toc-item')
 
-     let mainContent = document.createElement('span')
+      let mainContent = document.createElement('span')
       let tocItemNumber =document.createElement('span')
       tocItemNumber.classList.add('toc-item-number')
       if (node.attrs?.level == 1) {
@@ -151,7 +151,6 @@ export class TocBuilder {
       }
       else{
         const elList = node.content?.map(n=>{
-
               return  this.converter.parse(n)
             })
         tocItemNumber.append(document.createTextNode(counter),...(elList || [document.createTextNode('')]))
