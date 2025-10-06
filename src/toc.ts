@@ -116,7 +116,7 @@ export class TocBuilder {
         return ''
     }
 
-    buildLink(node:NodeI,counter:string,pra?:boolean){
+    buildLink(node:NodeI,counter:string,pra?:boolean,after?:boolean){
 
       const h =  document.createElement(`h${node.attrs?.level == 1 ? 2 : 3}`)
 
@@ -167,7 +167,7 @@ export class TocBuilder {
 
         const linkNumber = document.createElement('a')
         linkNumber.href = `#${node.attrs?.id}`
-        linkNumber.classList.add( pra ? 'link-number-pra':'link-number')
+        linkNumber.classList.add(pra ? (after ? 'link-number': 'link-number-pra'):'link-number')
 
 
         h.append(pageNum,linkNumber)
@@ -209,7 +209,8 @@ export class TocBuilder {
                 type:"text",
                 text
             }],
-            pra:true
+            pra:true,
+            after:true
         })
         
 
@@ -224,7 +225,7 @@ export class TocBuilder {
             const level = h.attrs?.level || 1
             this.increseCounter(level,h.pra || false)
             const li =document.createElement('li')
-            li.append(this.buildLink(h,this.getCounter(level),h.pra))
+            li.append(this.buildLink(h,this.getCounter(level),h.pra,h.after || false))
 
             if (level ==1) {
                 level1UL.push({level,children:[],li})

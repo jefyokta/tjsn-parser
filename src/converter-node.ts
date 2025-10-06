@@ -138,26 +138,22 @@ export class Converter {
    
     if (id) cap.id = id
     if (node.content) cap.append(...this.getHtmlContent(node.content))
+      const clone = cap.cloneNode(true)
+      let tmpNode:HTMLElement[] = [];
+       clone.childNodes.forEach(e=>{
+            if (e.nodeName != "A") {
+              const cloned = e.cloneNode(true)
+
+              tmpNode.push(cloned as HTMLElement)           
+             }
+          })
        if (type == 'imageFigure') {
           Counter.increaseImage()
-          let nodes:HTMLElement[] =[]
-          cap.childNodes.forEach(e=>{
-            if (e.nodeName != "A") {
-              nodes.push(e as HTMLElement)
-            }
-          })
-         
-          Counter.addImage({id:id!,caption:nodes})    
+          Counter.addImage({id:id!,caption:tmpNode})    
         }
         if (type == 'figureTable') {
           Counter.increaseTable()
-          let nodes:HTMLElement[] =[]
-          cap.childNodes.forEach(e=>{
-            if (e.nodeName != "A") {
-              nodes.push(e as HTMLElement)
-            }
-          })
-         Counter.addTable({id:id!,caption:nodes})
+          Counter.addTable({id:id!,caption:tmpNode})
           
         }
     return cap
