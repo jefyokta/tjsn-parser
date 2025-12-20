@@ -26,7 +26,8 @@ export class Parser {
         id
       },
       content:[
-        {type:'text',
+        {
+          type:'text',
           text
         }
       ]
@@ -86,16 +87,4 @@ export class Parser {
 
   }
 
-  renderImageList(appendTo:HTMLElement){
-
-
-
-
-  
-
-  
-
-  }
-
-  renderTableList(){}
 }

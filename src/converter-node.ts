@@ -6,16 +6,29 @@ import Counter from "./collector/counter";
 export class Converter {
 
 
-
+  private static custom:Record<string,(node:NodeI)=>HTMLElement>
   constructor(private markExcept:string[] =[]){}
   private getHtmlContent(nodes?: NodeI[]): Node[] {
     if (!nodes) return []
     return nodes.map((n) => this.parse(n))
   }
 
+  static register(name:string,handler:(node:NodeI)=>HTMLElement){
+
+    this.custom[name] = handler
+  }
+
   parse(node: NodeI): Node {
+    const customParser = Converter.custom[node.type]
+    if (customParser) {
+      return customParser(node)
+    }
+    if (node.type == 'register') {
+      console.warn("cannot parsing node with type register")
+        return document.createTextNode("")      
+    }
     const fn = (this as any)[node.type]
-    if (typeof fn === "function") {
+    if (typeof fn === "function" ) {
       return fn.call(this, node)
     }
 
@@ -44,11 +57,12 @@ export class Converter {
   }
   heading(node: NodeI): HTMLElement {
     const level = node.attrs?.level ?? 1
-    const h = document.createElement(`h${level}`) as HTMLElement
+    const h = document.createElement(`h${level}`) as HTMLHeadingElement
     if (node.attrs?.id){
        node.attrs.id = IdCollector.getId(node.attrs.id)
        h.id = node.attrs.id
       }
+
     if (node.attrs?.level == 1) {
       Counter.increaseHeading()
       
@@ -112,6 +126,7 @@ export class Converter {
     wrapper.style.position = "relative"
     wrapper.style.display = "inline-block"
     wrapper.style.width = `${node.attrs?.width}px`
+    wrapper.style.height = 'auto'
     wrapper.style.maxWidth = "100%"
 
     const img = document.createElement("img")
@@ -206,7 +221,11 @@ export class Converter {
 
     const inner = document.createElement("div")
     inner.dataset.latex = node.attrs?.latex ?? ""
-    outer.append(inner)
+    const label = document.createElement("div")
+    label.classList.add("equation")
+    label.id = node.attrs?.id || "eq:"+IdCollector.getId('')
+
+    outer.append(inner,label)
     return outer
   }
 
@@ -224,18 +243,13 @@ export class Converter {
     const td = document.createElement("td")
     td.colSpan = node.attrs?.colspan ?? 1
     td.rowSpan = node.attrs?.rowspan ?? 1
-    td.style.width = node.attrs?.colwidth?.[0]
-      ? `${node.attrs.colwidth[0]}px`
-      : "auto"
+      const width = node.attrs?.colwidth?.reduce((p:number,i:number)=>p+i)
 
-    const inner = document.createElement("div")
-    inner.style.display = "flex"
-    inner.style.flexDirection = "column"
-    inner.style.justifyContent = "center"
-    inner.style.alignItems = this.getCellAlignment(node.attrs?.align)
-    if (node.content) inner.append(...this.getHtmlContent(node.content))
+    td.style.width = width  ? `${width}px`:  "auto"
 
-    td.append(inner)
+    td.classList.add(this.getCellAlignment(node.attrs?.align))
+    td.style.textAlign =this.getCellAlignment(node.attrs?.align)
+    td.append(...this.getHtmlContent(node.content || []))
     return td
   }
 
@@ -243,18 +257,13 @@ export class Converter {
     const th = document.createElement("th")
     th.colSpan = node.attrs?.colspan ?? 1
     th.rowSpan = node.attrs?.rowspan ?? 1
-    th.style.width = node.attrs?.colwidth?.[0]
-      ? `${node.attrs.colwidth[0]}px`
+    const width = node.attrs?.colwidth?.reduce((p:number,i:number)=>p+i)
+    th.style.width = width
+      ? `${width}px`
       : "auto"
 
-    const inner = document.createElement("div")
-    inner.style.display = "flex"
-    inner.style.flexDirection = "column"
-    inner.style.justifyContent = "center"
-    inner.style.alignItems = this.getCellAlignment(node.attrs?.align)
-    if (node.content) inner.append(...this.getHtmlContent(node.content))
-
-    th.append(inner)
+    th.style.textAlign = this.getCellAlignment(node.attrs?.align)
+    th.append(...this.getHtmlContent(node.content || []))
     return th
   }
 
@@ -273,11 +282,11 @@ export class Converter {
   private getCellAlignment(alignment?: string): string {
     switch (alignment) {
       case "left":
-        return "start"
+        return "left"
       case "center":
         return "center"
       default:
-        return "start"
+        return "right"
     }
   }
 

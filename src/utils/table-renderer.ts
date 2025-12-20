@@ -27,8 +27,6 @@ export class TableView {
                 const col = document.createElement('col')
                 let width = cell.attrs?.colWidth?.pop() ;
                 width = width ? width + 'px' : 'auto'
-             
-
                 col.style.width = width
                 return col
                 
@@ -54,31 +52,21 @@ export class TableView {
               return tr
           })
                       
-         const trCell =    rows
+         const trCell =  rows
                             .filter((r)=> !r.content?.find(c=>c.type == 'tableHeader'))
-          const tds =trCell.map((t)=>{
+          const tds = trCell.map((t)=>{
 
             const tr = document.createElement('tr')
             parser.render(t.content||[],tr)
 
               return tr
-          })
-                      
-                      
-                            
-
+          })                                                            
            return [ths,tds]
     }
 
     static getCellAlignment(alignment?: string): string {
-    switch (alignment) {
-      case "left":
-        return "start"
-      case "center":
-        return "center"
-      default:
-        return "start"
-    }
+    return  ['left','center'].includes(alignment || '') ? alignment as string: 'start'
+  
   }
 
 
