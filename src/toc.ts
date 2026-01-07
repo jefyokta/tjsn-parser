@@ -47,8 +47,8 @@ export class TocBuilder {
 
             const li = document.createElement('li');
             li.append(this.buildLink(h, this.getCounter(level)));
+            li.setAttribute("data-toc-counter",this.getCounter(level) || "");
 
-            
             if (level > stack[stack.length - 1]!.level) {
                 const newUl = document.createElement('ul');
                 stack[stack.length - 1]!.ul.append(li); 
@@ -104,7 +104,7 @@ export class TocBuilder {
 
         }
         if (level == 2) {
-            return `${this.counter}.${this.subCounter}. `
+            return  `${this.counter}.${this.subCounter}. `
 
         }
         if (level == 3) {
@@ -146,20 +146,18 @@ export class TocBuilder {
                     text = this.converter.text(node.content[0])
                
                 }
-                tocItemNumber.append(document.createTextNode(counter),text || document.createTextNode(''))
+                tocItemNumber.append(text || document.createTextNode(''))
              }     
       }
       else{
         const elList = node.content?.map(n=>{
               return  this.converter.parse(n)
             })
-        tocItemNumber.append(document.createTextNode(counter),...(elList || [document.createTextNode('')]))
+        tocItemNumber.append(...(elList || [document.createTextNode('')]))
 
       }
    
-     
-     
-     
+          
         mainContent.append(tocItemNumber)
         tocItem.append(mainContent)
         spanWrapper.append(tocItem)
@@ -226,7 +224,8 @@ export class TocBuilder {
             this.increseCounter(level,h.pra || false)
             const li =document.createElement('li')
             li.append(this.buildLink(h,this.getCounter(level),h.pra,h.after || false))
-
+            li.setAttribute("data-toc-counter",this.getCounter(level) || "");
+            h.after && li.classList.add("h-after")
             if (level ==1) {
                 level1UL.push({level,children:[],li})
             }

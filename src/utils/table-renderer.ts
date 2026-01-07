@@ -25,9 +25,8 @@ export class TableView {
 
              const cols =  maxGroup &&  maxGroup.content?.map((cell)=>{
                 const col = document.createElement('col')
-                let width = cell.attrs?.colWidth?.pop() ;
-                width = width ? width + 'px' : 'auto'
-                col.style.width = width
+                let width = cell.attrs?.colwidth?.[0] ;
+                col.style.width =  width ?`${width}px` : 'auto'
                 return col
                 
             })

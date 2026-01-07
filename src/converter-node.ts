@@ -1,35 +1,36 @@
 import { HeadingCollector } from "./collector/heading";
 import { IdCollector } from "./collector/id-collector";
-import {type NodeI} from "./types/type"
+import {type NodeI, type Parser} from "./types/type"
 import { TableView } from "./utils/table-renderer";
 import Counter from "./collector/counter";
+import { uid } from "./utils/uuid";
 export class Converter {
 
 
-  private static custom:Record<string,(node:NodeI)=>HTMLElement>
+  private static custom:Record<string,Parser>
   constructor(private markExcept:string[] =[]){}
   private getHtmlContent(nodes?: NodeI[]): Node[] {
     if (!nodes) return []
     return nodes.map((n) => this.parse(n))
   }
 
-  static register(name:string,handler:(node:NodeI)=>HTMLElement){
+  static register(name:string,handler:Parser){
 
     this.custom[name] = handler
   }
 
   parse(node: NodeI): Node {
-    const customParser = Converter.custom[node.type]
-    if (customParser) {
-      return customParser(node)
-    }
+    // const customParser = Converter.custom[node.type]
+    // if (customParser) {
+    //   return customParser(node)
+    // }
     if (node.type == 'register') {
       console.warn("cannot parsing node with type register")
         return document.createTextNode("")      
     }
     const fn = (this as any)[node.type]
     if (typeof fn === "function" ) {
-      return fn.call(this, node)
+      return (fn as Parser).call(this, node)
     }
 
     return document.createTextNode("")
@@ -42,17 +43,25 @@ export class Converter {
     else p.innerHTML = "&nbsp;"
     return p
   }
-  cite(node:NodeI<{cite:string,citeA:boolean}>)
+  cite(node:NodeI<{cite:string,citeA:boolean,manual:boolean,text:string,year:string}>)
   
   {
     const cite = document.createElement('a')
     cite.setAttribute('data-cite','1')
+    cite.setAttribute("data-manual",node.attrs?.manual ? '1':'0')
+    cite.setAttribute("data-text",node.attrs?.text || "");
+    cite.setAttribute("data-year",node.attrs?.year || "");
+
+    
     cite.href = `#${node.attrs!.cite}`
     if (node.attrs?.citeA) {
       cite.setAttribute('citeA','true')
       
     }
-    return cite;
+  const p= document.createElement("cite")
+   
+   p.append(cite);
+   return p
 
   }
   heading(node: NodeI): HTMLElement {
@@ -123,7 +132,7 @@ export class Converter {
 
   image(node: NodeI): HTMLElement {
     const wrapper = document.createElement("div")
-    wrapper.style.position = "relative"
+    // wrapper.style.position = "relative"
     wrapper.style.display = "inline-block"
     wrapper.style.width = `${node.attrs?.width}px`
     wrapper.style.height = 'auto'
@@ -156,11 +165,8 @@ export class Converter {
       const clone = cap.cloneNode(true)
       let tmpNode:HTMLElement[] = [];
        clone.childNodes.forEach(e=>{
-            if (e.nodeName != "A") {
-              const cloned = e.cloneNode(true)
-
-              tmpNode.push(cloned as HTMLElement)           
-             }
+         const cloned = e.cloneNode(true)
+         tmpNode.push(cloned as HTMLElement)           
           })
        if (type == 'imageFigure') {
           Counter.increaseImage()
@@ -243,11 +249,10 @@ export class Converter {
     const td = document.createElement("td")
     td.colSpan = node.attrs?.colspan ?? 1
     td.rowSpan = node.attrs?.rowspan ?? 1
-      const width = node.attrs?.colwidth?.reduce((p:number,i:number)=>p+i)
-
-    td.style.width = width  ? `${width}px`:  "auto"
-
+    const width =node.attrs?.colwidth?.reduce((e:number,w:number)=>e+w)
+    width &&  td.setAttribute("colwidth",width)
     td.classList.add(this.getCellAlignment(node.attrs?.align))
+    td.style.minWidth = width
     td.style.textAlign =this.getCellAlignment(node.attrs?.align)
     td.append(...this.getHtmlContent(node.content || []))
     return td
@@ -257,12 +262,11 @@ export class Converter {
     const th = document.createElement("th")
     th.colSpan = node.attrs?.colspan ?? 1
     th.rowSpan = node.attrs?.rowspan ?? 1
-    const width = node.attrs?.colwidth?.reduce((p:number,i:number)=>p+i)
-    th.style.width = width
-      ? `${width}px`
-      : "auto"
-
-    th.style.textAlign = this.getCellAlignment(node.attrs?.align)
+    const width =node.attrs?.colwidth?.reduce((e:number,w:number)=>e+w)
+    width &&  th.setAttribute("colwidth",width)
+    th.style.minWidth = width
+    th.style.textAlign =this.getCellAlignment(node.attrs?.align)
+    th.classList.add(this.getCellAlignment(node.attrs?.align))
     th.append(...this.getHtmlContent(node.content || []))
     return th
   }
@@ -278,6 +282,11 @@ export class Converter {
   refComponent(node: NodeI): HTMLElement {
     return this.ref(node)
   }
+  hardBreak(node:NodeI):HTMLParagraphElement {
+    const p = document.createElement("p")
+  p.innerHTML = "&nbsp;";
+    return p
+  }
 
   private getCellAlignment(alignment?: string): string {
     switch (alignment) {
@@ -286,7 +295,7 @@ export class Converter {
       case "center":
         return "center"
       default:
-        return "right"
+        return "left"
     }
   }
 
@@ -295,4 +304,6 @@ export class Converter {
       typeof (this as any)[method] === "function" 
     )
   }
+
+  
 }

@@ -16,9 +16,8 @@ export default class ImageList {
             tocItem.classList.add('toc-item')
 
             const textWrapper = document.createElement("span")
-
-            const counter = document.createTextNode(`${this.name} ${e.counter}`)
-            textWrapper.append(counter,document.createTextNode(" "), ...e.caption)
+            li.setAttribute("data-toc-counter",`${this.name}${e.counter}`);
+            textWrapper.append(...e.caption)
             tocItem.append(textWrapper)
 
             span.append(tocItem)

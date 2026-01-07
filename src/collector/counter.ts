@@ -9,11 +9,20 @@ export default class Counter {
     private static tableCounter:number=0;
     private static tables:CaptionCounterData[]=[];
     private static images:CaptionCounterData[]=[];
+    private static alpha = false;
     static increaseHeading(){
         this.h1Counter++
         this.tableCounter =0;
         this.imageCounter =0;
+    }
 
+    static reset(){
+        this.h1Counter =0;
+        this.imageCounter =0;
+        this.tableCounter =0;
+        this.tables =[]
+        this.images =[]
+        this.alpha = false;
     }
 
     static getTables(){
@@ -22,6 +31,7 @@ export default class Counter {
     static getImages(){
         return this.images
     }
+
     static increaseImage(){
         this.imageCounter++
     }
@@ -55,10 +65,28 @@ export default class Counter {
        }
 
     }
+    static setAlpha() {
+        this.alpha = true;
+    }
     static addImage(data:CaptionData){
-        this.images.push({counter:`${this.h1Counter}.${this.imageCounter}.`,...data})
+        this.images.push({counter:`${this.alpha ? this.getAlpha(this.h1Counter):this.h1Counter}.${this.imageCounter}`,...data})
     }
-      static addTable(data:CaptionData){
-        this.tables.push({counter:`${this.h1Counter}.${this.tableCounter}.`,...data})
+    static addTable(data:CaptionData){
+        this.tables.push({counter:`${this.alpha ? this.getAlpha(this.h1Counter):this.h1Counter}.${this.tableCounter}`,...data})
     }
+
+    static getAlpha(num: number): string {
+        if (num <= 0) return "";
+        let result = "";
+        let n = num;
+
+        while (n > 0) {
+            n--; 
+            result = String.fromCharCode(65 + (n % 26)) + result;
+            n = Math.floor(n / 26);
+        }
+
+        return result;
+    }
+
 }

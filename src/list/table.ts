@@ -17,8 +17,8 @@ export default class TableList {
 
             const textWrapper = document.createElement("span")
 
-            const counter = document.createTextNode(`${this.name} ${e.counter}`)
-            textWrapper.append(counter,document.createTextNode(" "), ...e.caption)
+            li.setAttribute("data-toc-counter",`${this.name}${e.counter}`)
+            textWrapper.append(...e.caption)
             tocItem.append(textWrapper)
 
             span.append(tocItem)

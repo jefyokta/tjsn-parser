@@ -1,6 +1,6 @@
 {
   "name": "tjsn-parser",
-  "version": "0.0.18",
+  "version": "0.0.33",
   "description": "json-parser-html",
   "keywords": [
     "json-parser"
@@ -29,12 +29,13 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-      "terser": "^5.44.0"
-
+    "terser": "^5.44.0"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
-  "module": "dist/index.js"
-
+  "module": "dist/index.js",
+  "dependencies": {
+    "type-fest": "^5.3.1"
+  }
 }

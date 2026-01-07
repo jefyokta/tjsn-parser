@@ -10,8 +10,8 @@ export class Parser {
 
   private praHead :{text:string,id:string}[]= []
   private afterHead :{text:string,id:string}[]= []
-  private imageName = 'Gambar'
-  private tableName ='Tabel'
+  private imageName = ''
+  private tableName =''
 
   constructor() {
     this.converter = new Converter();
