@@ -9,4 +9,4 @@ export interface NodeI<T = Record<string,any>> {
 }
 
 
-export type Parser = (node:NodeI)=>Node;
+export type Parser = (node:NodeI)=>HTMLElement|Text;

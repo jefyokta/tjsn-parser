@@ -98,21 +98,19 @@ export class TocBuilder {
     }
 
     getCounter(level?:number,praHead?:boolean){
-        if (level == 1) {
-           
-            return  praHead ?  '' : `${this.counter}. `
+        if (level == 1) {           
+            return  praHead ?  '' : `${this.counter} `
 
         }
         if (level == 2) {
-            return  `${this.counter}.${this.subCounter}. `
+            return  `${this.counter}.${this.subCounter} `
 
         }
         if (level == 3) {
-            return `${this.counter}.${this.subCounter}.${this.subSubCounter}. `
+            return `${this.counter}.${this.subCounter}.${this.subSubCounter} `
 
             
         }
-
         return ''
     }
 
