@@ -4,6 +4,7 @@ import { type NodeI, type Parser } from "./types/type";
 import { TableView } from "./utils/table-renderer";
 import Counter from "./collector/counter";
 import { uid } from "./utils/uuid";
+import { GridView } from "./utils/grid-renderer";
 
 export class Converter {
   private static custom: Record<string, Parser> = {};
@@ -95,10 +96,7 @@ export class Converter {
 
     const h = document.createElement(`h${level}`) as HTMLHeadingElement;
 
-    if (node.attrs?.id) {
-      node.attrs.id = IdCollector.getId(node.attrs.id);
-      h.id = node.attrs.id;
-    }
+    h.id = node.attrs?.id || uid();
 
     if (node.attrs?.level == 1) {
       Counter.increaseHeading();
@@ -476,6 +474,26 @@ export class Converter {
       default:
         return "left";
     }
+  }
+
+  grid(node:NodeI){
+    const table = GridView.render(node);
+
+    this.assignUUID(table, node);
+    const wrapper =document.createElement("div")
+    wrapper.classList.add("node-grid")
+    wrapper.append(table)
+    return wrapper
+
+  }
+
+  codeBlock(node:NodeI<{language:string|null}>){
+    const pre =document.createElement("pre")
+    const code = document.createElement("code")
+    const text = node.content?.length ? node.content[0]?.text || "" : "" 
+    code.innerText =text
+    pre.append(code)
+    return pre
   }
 
   hasMethod(method: string): boolean {
