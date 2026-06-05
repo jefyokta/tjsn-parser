@@ -15,7 +15,9 @@ export class Converter {
     if (!nodes) return [];
     return nodes.map((n) => this.parse(n));
   }
-
+/**
+ * @deprecated
+ */
   static register(name: string, handler: Parser) {
     this.custom[name] = handler;
   }
@@ -493,10 +495,18 @@ export class Converter {
     const text = node.content?.length ? node.content[0]?.text || "" : "" 
     code.innerText =text
     pre.append(code)
+    code.setAttribute("language",node.attrs?.language || "plaintext")
+    this.assignUUID(pre,node)
     return pre
   }
 
   hasMethod(method: string): boolean {
     return typeof (this as any)[method] === "function";
+  }
+  horizontalRule(_node:NodeI){
+    const hr =document.createElement("div")
+    hr.style.breakAfter = 'always !important'
+    return hr
+
   }
 }
