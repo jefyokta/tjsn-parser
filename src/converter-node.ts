@@ -45,6 +45,7 @@ export class Converter {
     if (typeof fn === "function") {
       return (fn as Parser).call(this, node);
     }
+    console.warn("unknown node %s",node.type)
 
     return document.createTextNode("");
   }
@@ -488,12 +489,21 @@ export class Converter {
     return wrapper
 
   }
+  gridRow(node:NodeI){
+    return this.tableRow(node)
+  }
+
+  gridCell(node:NodeI){
+    return this.tableCell(node)
+  }
+
 
   codeBlock(node:NodeI<{language:string|null}>){
     const pre =document.createElement("pre")
     const code = document.createElement("code")
     const text = node.content?.length ? node.content[0]?.text || "" : "" 
-    code.innerText =text
+    code.setAttribute("code",text)
+    code.textContent =text
     pre.append(code)
     code.setAttribute("language",node.attrs?.language || "plaintext")
     this.assignUUID(pre,node)
@@ -505,8 +515,18 @@ export class Converter {
   }
   horizontalRule(_node:NodeI){
     const hr =document.createElement("div")
+    hr.classList.add('page-break')
     hr.style.breakAfter = 'always !important'
     return hr
 
+  }
+  variable(node:NodeI<{name:string,case:string}>){
+    const span = document.createElement("span")
+    span.setAttribute("data-variable",node.attrs?.name ||"")
+    span.setAttribute("data-case",node.attrs?.case || "preserve")
+    return span
+  }
+  dots(_:NodeI){
+    return document.createTextNode("...")
   }
 }

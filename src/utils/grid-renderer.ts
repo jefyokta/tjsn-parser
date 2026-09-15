@@ -1,3 +1,4 @@
+import { Parser } from "../converter";
 import type { NodeI } from "../types/type";
 import { TableView } from "./table-renderer";
 
@@ -12,4 +13,15 @@ export class GridView extends TableView{
 
         return table
     }
+      static override getCells(rows:NodeI[]){
+    
+          const parser= new Parser
+        
+          const tds = rows.map((t)=>{
+            const tr = document.createElement('tr')
+            parser.render(t.content||[],tr)
+              return tr
+          })                                                              
+             return [[] as HTMLTableRowElement[],tds]
+        }
 }

@@ -22,7 +22,10 @@ const commands: Record<string, () => any | Promise<any>> = {
         const newVersion = vers.join(".");
 
         console.log("version upgrade from @" + currentVersion + " to @" + newVersion);
+        await $`bun build-clean`
+        console.log("stuff builded!")
         content.version = newVersion;
+
 
         
         await Bun.write("package.json", JSON.stringify(content, null, 2));

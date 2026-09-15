@@ -1,6 +1,6 @@
 {
   "name": "tjsn-parser",
-  "version": "0.0.38",
+  "version": "0.0.43",
   "description": "json-parser-html",
   "keywords": [
     "json-parser"
@@ -25,10 +25,11 @@
   "scripts": {
     "build-test": "bun build test.ts --outifile test.js",
     "build": "tsc && esbuild 'src/*.ts' 'src/**/*.ts' --outdir=dist --minify",
-    "pub": "rm -rf ./dist && bun run build && npm publish"
+    "pub": "rm -rf ./dist && bun run build && npm publish",
+    "build-clean": "rm -rf ./dist && bun run build "
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/bun": "^1.3.14",
     "terser": "^5.44.0"
   },
   "peerDependencies": {
