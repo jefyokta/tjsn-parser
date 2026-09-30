@@ -2,6 +2,10 @@ import { Parser } from "../converter";
 import type { NodeI } from "../types/type";
 import { TableView } from "./table-renderer";
 
+/**
+ * @deprecated
+ */
+//@ts-ignore
 export class GridView extends TableView{
     static override render(node: NodeI): HTMLTableElement {
         const table = document.createElement('table');
@@ -13,7 +17,7 @@ export class GridView extends TableView{
 
         return table
     }
-      static override getCells(rows:NodeI[]){
+      static  getCells(rows:NodeI[]){
     
           const parser= new Parser
         

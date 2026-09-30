@@ -7,19 +7,59 @@ export class TableView {
         const thead = document.createElement("thead");
         const tbody = document.createElement("tbody");
 
-        const [th, td] = this.getCells(node.content || []);
+        const rows = node.content || [];
+        console.log(rows.length)
+        const parser = new Parser();
 
-        if (th.length) {
-            thead.append(...th);
+        let headerEnd = 0;
+        console.log(rows.length)
+        for (let index = 0; index < rows.length; index++) {
+            const row = rows[index];
+            const headers =
+                row?.content?.filter(
+                    (cell) => cell.type === "tableHeader"
+                ) || [];
+            //every cells must  be th to be a header row rn
+            if ((headers.length !== (row?.content?.length || 0))) {
+                console.log("not header row %d, cell total %d, header total %d",index +1,row?.content?.length,headers.length)
+                continue;
+            }
+
+            const maxRowspan = Math.max(
+                ...headers.map(
+                    (header) =>
+                        Number(header.attrs?.rowspan) || 1
+                )
+            );
+
+            headerEnd = Math.max(
+                headerEnd,
+                index + maxRowspan
+            );
+        }
+    console.log(headerEnd)
+        for (let index = 0; index < rows.length; index++) {
+            const rowEl = document.createElement("tr");
+
+            parser.render(
+                rows[index]?.content || [],
+                rowEl
+            );
+
+            if (index < headerEnd) {
+                thead.append(rowEl);
+            } else {
+                tbody.append(rowEl);
+            }
         }
 
-        if (td.length) {
-            tbody.append(...td);
-        }
+        const colGroup = this.getColGroup(rows);
 
-        const colGroup = this.getColGroup(node.content || []);
-
-        table.append(colGroup, thead, tbody);
+        table.append(
+            colGroup,
+            thead,
+            tbody
+        );
 
         return table;
     }
@@ -52,63 +92,9 @@ export class TableView {
         return colGroup;
     }
 
-    static getCells(rows: NodeI[]) {
-        const parser = new Parser();
+  
 
-        const ths: HTMLTableRowElement[] = [];
-        const tds: HTMLTableRowElement[] = [];
 
-        let headerRowsRemaining = 0;
-
-        for (const row of rows) {
-            const headers =
-                row.content?.filter(
-                    (cell) => cell.type === "tableHeader"
-                ) || [];
-
-            const hasHeader = headers.length > 0;
-
-            if (hasHeader) {
-                ths.push(this.renderRow(parser, row));
-
-                const maxRowSpan = Math.max(
-                    1,
-                    ...headers.map(
-                        (cell) => Number(cell.attrs?.rowspan) || 1
-                    )
-                );
-
-                headerRowsRemaining = Math.max(
-                    headerRowsRemaining,
-                    maxRowSpan - 1
-                );
-
-                continue;
-            }
-
-            if (headerRowsRemaining > 0) {
-                ths.push(this.renderRow(parser, row));
-                headerRowsRemaining--;
-
-                continue;
-            }
-
-            tds.push(this.renderRow(parser, row));
-        }
-
-        return [ths, tds] as const;
-    }
-
-    private static renderRow(
-        parser: Parser,
-        row: NodeI
-    ): HTMLTableRowElement {
-        const tr = document.createElement("tr");
-
-        parser.render(row.content || [], tr);
-
-        return tr;
-    }
 
     static getCellAlignment(alignment?: string): string {
         return ["left", "center"].includes(alignment || "")

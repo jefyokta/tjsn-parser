@@ -175,6 +175,13 @@ export class Converter {
 
     return b;
   }
+  code(text:string){
+    const code = document.createElement("code");
+    code.textContent = text;
+    this.assignUUID(code);
+
+    return code
+  }
 
   italic(text: string): HTMLElement {
     const em = document.createElement("em");
@@ -338,6 +345,12 @@ export class Converter {
     this.assignUUID(span, node);
 
     return span;
+  }
+
+  note(text:string){
+    const span = document.createTextNode(text);
+
+    return span
   }
 
   blockMath(node: NodeI): HTMLElement {
