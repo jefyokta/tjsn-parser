@@ -177,6 +177,7 @@ export class Converter {
   }
   code(text:string){
     const code = document.createElement("code");
+    code.setAttribute("data-inline",'1');
     code.textContent = text;
     this.assignUUID(code);
 

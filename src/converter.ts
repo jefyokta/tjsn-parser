@@ -64,6 +64,7 @@ export class Parser {
     });
 
     appendTo.append(...elmns);
+    this.fixUnwrappedText(appendTo)
     this.fixRef(appendTo)
     return new List(this.tableName,this.imageName)
   }
@@ -84,7 +85,18 @@ export class Parser {
         e.textContent = `${this.tableName} ${data.counter}`
       }
     })
+  }
+  private fixUnwrappedText(el: HTMLElement) {
+    el.querySelectorAll("p").forEach((p) => {
+      const next = p.nextSibling;
 
+      if (
+        p.innerHTML.trim() === "&nbsp;" &&
+        next?.nodeType === Node.TEXT_NODE
+      ) {
+        p.appendChild(next);
+      }
+    });
   }
 
 }
