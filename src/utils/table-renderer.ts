@@ -8,11 +8,11 @@ export class TableView {
         const tbody = document.createElement("tbody");
 
         const rows = node.content || [];
-        console.log(rows.length)
+        // console.log(rows.length)
         const parser = new Parser();
 
         let headerEnd = 0;
-        console.log(rows.length)
+        // console.log(rows.length)
         for (let index = 0; index < rows.length; index++) {
             const row = rows[index];
             const headers =
@@ -21,7 +21,7 @@ export class TableView {
                 ) || [];
             //every cells must  be th to be a header row rn
             if ((headers.length !== (row?.content?.length || 0))) {
-                console.log("not header row %d, cell total %d, header total %d",index +1,row?.content?.length,headers.length)
+                // console.log("not header row %d, cell total %d, header total %d",index +1,row?.content?.length,headers.length)
                 continue;
             }
 
@@ -37,7 +37,7 @@ export class TableView {
                 index + maxRowspan
             );
         }
-    console.log(headerEnd)
+    // console.log(headerEnd)
         for (let index = 0; index < rows.length; index++) {
             const rowEl = document.createElement("tr");
 

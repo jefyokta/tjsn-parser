@@ -51,6 +51,7 @@ export class Converter {
   }
 
   paragraph(node: NodeI): HTMLElement {
+
     const p = document.createElement("p");
 
     p.lang = "id";
@@ -206,7 +207,7 @@ export class Converter {
 
     img.src = node.attrs?.src;
     img.className = "image-figure";
-    img.style.width = "100%";
+    // img.style.width = "100%";
     img.style.height = "auto";
 
     this.assignUUID(img, node);
@@ -470,12 +471,13 @@ export class Converter {
     return this.ref(node);
   }
 
-  hardBreak(node: NodeI): HTMLParagraphElement {
-    const p = document.createElement("p");
+  hardBreak(node: NodeI): HTMLElement {
+    const p = document.createElement("br");
 
-    p.innerHTML = "&nbsp;";
+    // p.innerHTML = "&nbsp;";
+    // console.log(p)
 
-    this.assignUUID(p, node);
+    // this.assignUUID(p, node);
 
     return p;
   }
